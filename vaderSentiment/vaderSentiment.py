@@ -508,33 +508,47 @@ class SentimentIntensityAnalyzer(object):
 
 
 if __name__ == '__main__':
+    # sentences = ["Willett's wife due Masters week: If he fancies coming out early on, it would be great. If not, I won't be playing"
+    # ]
+
+
+    text = input('Enter your tweet : ')
+    text = '["' + text + '"]'
+    sentences = eval(text)
+    print(text , sentences)
+
+
+
+
+
     # --- examples -------
-    sentences = ["VADER is smart, handsome, and funny.",  # positive sentence example
-                 "VADER is smart, handsome, and funny!",
-                 # punctuation emphasis handled correctly (sentiment intensity adjusted)
-                 "VADER is very smart, handsome, and funny.",
-                 # booster words handled correctly (sentiment intensity adjusted)
-                 "VADER is VERY SMART, handsome, and FUNNY.",  # emphasis for ALLCAPS handled
-                 "VADER is VERY SMART, handsome, and FUNNY!!!",
-                 # combination of signals - VADER appropriately adjusts intensity
-                 "VADER is VERY SMART, uber handsome, and FRIGGIN FUNNY!!!",
-                 # booster words & punctuation make this close to ceiling for score
-                 "VADER is not smart, handsome, nor funny.",  # negation sentence example
-                 "The book was good.",  # positive sentence
-                 "At least it isn't a horrible book.",  # negated negative sentence with contraction
-                 "Dustin is the pick for the game.",
-                 "Player who will fade is Adesh",
-                 "The book was only kind of good.",
-                 # qualified positive sentence is handled correctly (intensity adjusted)
-                 "The plot was good, but the characters are uncompelling and the dialog is not great.",
-                 # mixed negation sentence
-                 "Today SUX!",  # negative slang with capitalization emphasis
-                 "Today only kinda sux! But I'll get by, lol",
-                 # mixed sentiment example with slang and constrastive conjunction "but"
-                 "Make sure you :) or :D today!",  # emoticons handled
-                 "Catch utf-8 emoji such as 💘 and 💋 and 😁",  # emojis handled
-                 "Not bad at all"  # Capitalized negation
-                 ]
+    # sentences = ["VADER is smart, handsome, and funny.",  # positive sentence example
+    #              "VADER is smart, handsome, and funny!",
+    #              # punctuation emphasis handled correctly (sentiment intensity adjusted)
+    #              "VADER is very smart, handsome, and funny.",
+    #              # booster words handled correctly (sentiment intensity adjusted)
+    #              "VADER is VERY SMART, handsome, and FUNNY.",  # emphasis for ALLCAPS handled
+    #              "VADER is VERY SMART, handsome, and FUNNY!!!",
+    #              # combination of signals - VADER appropriately adjusts intensity
+    #              "VADER is VERY SMART, uber handsome, and FRIGGIN FUNNY!!!",
+    #              # booster words & punctuation make this close to ceiling for score
+    #              "VADER is not smart, handsome, nor funny.",  # negation sentence example
+    #              "The book was good.",  # positive sentence
+    #              "At least it isn't a horrible book.",  # negated negative sentence with contraction
+    #              "Dustin is the pick for the game.",
+    #              "Player who will fade is Adesh",
+    #              "The book was only kind of good.",
+    #              # qualified positive sentence is handled correctly (intensity adjusted)
+    #              "The plot was good, but the characters are uncompelling and the dialog is not great.",
+    #              # mixed negation sentence
+    #              "Today SUX!",  # negative slang with capitalization emphasis
+    #              "Today only kinda sux! But I'll get by, lol",
+    #              # mixed sentiment example with slang and constrastive conjunction "but"
+    #              "Make sure you :) or :D today!",  # emoticons handled
+    #              "Catch utf-8 emoji such as 💘 and 💋 and 😁",  # emojis handled
+    #              "Not bad at all"  # Capitalized negation
+    #              ]
+
 
     analyzer = SentimentIntensityAnalyzer()
 
