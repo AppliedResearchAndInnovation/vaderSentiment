@@ -18,6 +18,15 @@ import requests
 import json
 from itertools import product
 from inspect import getsourcefile
+import pandas as pd
+import http.client, urllib.request, urllib.parse, urllib.error, base64
+import json
+import datetime
+
+from textblob import TextBlob
+import nltk
+import csv
+import re
 
 # ##Constants##
 
@@ -506,16 +515,75 @@ class SentimentIntensityAnalyzer(object):
 
         return sentiment_dict
 
+def blob_pos_tagg_analsys(sentence,gf_dict):
+    """
+    pass the model object and the text to be anlaysis return the model.
+    return a list of player names found in the 
+    """
+    #using Blob smilified tagger attemp to get the data and compare it with the dictionary
+    clean_sentence = re.compile(r'([^a-zA-Z0-9@&.:;,/"]+?)')
+    sentence_clean = clean_sentence.sub(' ', sentence)
+    blob = TextBlob(sentence_clean)
+    entitynames = blob.noun_phrases
+    les_master = [] 
+#example output ['Dylan', 'Frittelli', 'T2G', 'APP', 'B', 'Strike', 'Scramb', 'P4', 'BoB']
+    for entityname in entitynames:
+            fullname = find_lemmas(entityname,gf_dict)
+            if fullname:
+                les_master += fullname
+    """
+        fullname = [i for i in fullname if i.lower().strip() == tagged_player.lower().strip()]
+        if fullname:
+                #check for tagged players in the actual news feed (k) to the full name found (j) and entity (i)
+            if les_master == False:
+                if fullname[0].strip().lower()==tagged_player.strip():
+                    return (tagged_player,entityname)
+        if les_master:
+            return les_master
+        #compare found lemma to players tagges
+    """
+    return les_master
+
+def find_lemmas(player_name, golf_dic_list):
+    """
+    find all the lemmas associated with the given ibm names
+    return a list of name.
+    
+    for the golf_dic all lemmas are located at index 0
+    """
+    lemma = []
+    for golf_p_list in golf_dic_list:
+        for k in golf_p_list:
+            if player_name.strip().lower() == k.strip().lower():
+                lemma = lemma + [golf_p_list[0]]
+                break
+    return lemma
+
+
+def get_golfplayer_dictionary(filename):
+    #returns a list of lists, which host the lemma and all the surface words in the dictionary.
+    total = []
+    with open(filename, encoding='utf-8') as csvfile:
+        readCSV = csv.reader(csvfile, delimiter=',')
+        for row in readCSV:
+            clean = [i.strip() for i in row if i]
+            total.append(clean)
+    return total
+
+golf_player_dic_fn= 'golf-players-dictionary.csv'
+golf_dictionary = get_golfplayer_dictionary(golf_player_dic_fn)
 
 if __name__ == '__main__':
     # sentences = ["Willett's wife due Masters week: If he fancies coming out early on, it would be great. If not, I won't be playing"
     # ]
 
-
     text = input('Enter your tweet : ')
     text = '["' + text + '"]'
     sentences = eval(text)
     print(text , sentences)
+
+    golf_name_list = blob_pos_tagg_analsys(sentence=text,gf_dict=golf_dictionary)
+    print(golf_name_list)
 
 
 
