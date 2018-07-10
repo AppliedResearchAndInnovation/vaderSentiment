@@ -615,7 +615,7 @@ if __name__ == '__main__':
         if c > 0.05:
             vader_score.append('positive')
         elif c <= 0.05 and c >= -0.05:
-            vader_score.append('netural')
+            vader_score.append('neutral')
         else:
             vader_score.append('negative')
         #time_ending = origin_time + np.timedelta64(hrs,"h")
@@ -641,3 +641,20 @@ if __name__ == '__main__':
     ,'Negative[',df_tweet['sentiment_12h_database'].groupby('negative').count(),']','Netural ['
           ,df_tweet['sentiment_12h_database'].groupby('netural').count(),']')
     """
+
+    # get original data's class distribution
+    print('Class distribution of original sentiment')
+    print(df_tweet['sentiment_12h_database'].value_counts(normalize=True, sort=False))
+    print('Class distribution of VADER sentiment')
+    print(df_tweet['vader_sentiment'].value_counts(normalize=True, sort=False))
+
+    # get confusion matrix
+    from sklearn.metrics import confusion_matrix
+    y_true = df_tweet['sentiment_12h_database']
+    y_pred = df_tweet['vader_sentiment']
+    print(confusion_matrix(y_true, y_pred))
+
+    # calculate performance metrics
+    from sklearn.metrics import precision_recall_fscore_support, accuracy_score
+    print(precision_recall_fscore_support(y_true, y_pred))
+    print(accuracy_score(y_true, y_pred))
