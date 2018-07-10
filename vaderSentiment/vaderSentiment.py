@@ -642,19 +642,26 @@ if __name__ == '__main__':
           ,df_tweet['sentiment_12h_database'].groupby('netural').count(),']')
     """
 
-    # get original data's class distribution
-    print('Class distribution of original sentiment')
-    print(df_tweet['sentiment_12h_database'].value_counts(normalize=True, sort=False))
-    print('Class distribution of VADER sentiment')
-    print(df_tweet['vader_sentiment'].value_counts(normalize=True, sort=False))
-
-    # get confusion matrix
-    from sklearn.metrics import confusion_matrix
+    # get data's class distribution
+    from sklearn.metrics import confusion_matrix, precision_recall_fscore_support, accuracy_score
     y_true = df_tweet['sentiment_12h_database']
     y_pred = df_tweet['vader_sentiment']
-    print(confusion_matrix(y_true, y_pred))
+
+    print('Class distribution of original sentiment')
+    print(y_true.value_counts(normalize=True, sort=False))
+    print('Class distribution of VADER sentiment')
+    print(y_pred.value_counts(normalize=True, sort=False))
+
+    # get confusion matrix
+    print(confusion_matrix(y_true, y_pred, labels=["positive","neutral","negative"]))
 
     # calculate performance metrics
-    from sklearn.metrics import precision_recall_fscore_support, accuracy_score
-    print(precision_recall_fscore_support(y_true, y_pred))
+    print(precision_recall_fscore_support(y_true, y_pred, labels=["positive","neutral","negative"]))
     print(accuracy_score(y_true, y_pred))
+
+    # a = 0
+    # print(lens)
+    # for i in range(0, lens):
+    #     if y_true[i] == "neutral" and y_pred[i] == "positive":
+    #         a += 1
+    # print(a)
