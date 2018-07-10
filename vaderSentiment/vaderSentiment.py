@@ -656,8 +656,12 @@ if __name__ == '__main__':
     print(confusion_matrix(y_true, y_pred, labels=["positive","neutral","negative"]))
 
     # calculate performance metrics
-    print(precision_recall_fscore_support(y_true, y_pred, labels=["positive","neutral","negative"]))
-    print(accuracy_score(y_true, y_pred))
+    precision, recall, fscore, support = precision_recall_fscore_support(y_true, y_pred,
+                                                                         labels=["positive", "neutral", "negative"])
+    print('precision: {}'.format(precision))
+    print('recall: {}'.format(recall))
+    print('fscore: {}'.format(fscore))
+    print("accuracy: ", accuracy_score(y_true, y_pred))
 
     # a = 0
     # print(lens)
@@ -665,3 +669,4 @@ if __name__ == '__main__':
     #     if y_true[i] == "neutral" and y_pred[i] == "positive":
     #         a += 1
     # print(a)
+
