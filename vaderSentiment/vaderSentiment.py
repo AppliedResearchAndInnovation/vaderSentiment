@@ -575,16 +575,21 @@ def get_golfplayer_dictionary(filename):
             clean = [i.strip() for i in row if i]
             total.append(clean)
     return total
+
+#def print_performance():
+    # print performance metrics to a csv file
+
+
 #files in directory
-golf_player_dic_fn= 'golf-players-dictionary.csv'
-tweet_s = 'tweets_12h_sentiment.csv'
+golf_player_dic_fn = 'golf-players-dictionary.csv'
+tweet_s = 'converted.csv'
 calls_file = "calls_players.csv"
 
 df_sent = pd.read_csv(calls_file, index_col=0)
 df_tweet = pd.read_csv(tweet_s)
 df_tweet.drop("Unnamed: 0",axis=1, inplace=True)
 df_sent.drop("playerid",axis=1,inplace=True)
-change_col_datetime(df_tweet,'%Y-%m-%d %H:%M:%S.%f','created_on')
+#change_col_datetime(df_tweet,'%Y-%m-%d %H:%M:%S.%f','created_on')
 change_col_datetime(df_sent,'%Y-%m-%d %H:%M:%S.%f','created_on')
 df_sent.set_index('created_on', inplace=True)
 golf_dictionary = get_golfplayer_dictionary(golf_player_dic_fn)
@@ -601,6 +606,9 @@ if __name__ == '__main__':
     vader_com = []
     lens = df_tweet.shape[0]
     analyzer = SentimentIntensityAnalyzer()
+    pos_threshold = 0.05
+    neg_threshold = -0.05
+
     for count,message in enumerate(df_tweet['message']):
         #find the block of calls in the window of given time,
         #origin_time = np.datetime64(df_tweet['created_on'][count])
@@ -612,9 +620,9 @@ if __name__ == '__main__':
         vader_pos.append(vs['pos'])
         vader_nu.append(vs['neu'])
         c = vs['compound'] # the compound score
-        if c > 0.05:
+        if c > pos_threshold:
             vader_score.append('positive')
-        elif c <= 0.05 and c >= -0.05:
+        elif c <= pos_threshold and c >= neg_threshold:
             vader_score.append('neutral')
         else:
             vader_score.append('negative')
@@ -643,8 +651,8 @@ if __name__ == '__main__':
     """
 
     # get data's class distribution
-    from sklearn.metrics import confusion_matrix, precision_recall_fscore_support, accuracy_score
-    y_true = df_tweet['sentiment_12h_database']
+    from sklearn.metrics import confusion_matrix, precision_recall_fscore_support, accuracy_score, precision_score, recall_score, f1_score
+    y_true = df_tweet['Annotation_converted']
     y_pred = df_tweet['vader_sentiment']
 
     print('Class distribution of original sentiment')
@@ -658,15 +666,36 @@ if __name__ == '__main__':
     # calculate performance metrics
     precision, recall, fscore, support = precision_recall_fscore_support(y_true, y_pred,
                                                                          labels=["positive", "neutral", "negative"])
-    print('precision: {}'.format(precision))
-    print('recall: {}'.format(recall))
-    print('fscore: {}'.format(fscore))
-    print("accuracy: ", accuracy_score(y_true, y_pred))
+    precision_total = precision_score(y_true, y_pred, average="macro")
+    recall_total = recall_score(y_true, y_pred, average="macro")
+    accuracy = accuracy_score(y_true, y_pred)
+    f1 = f1_score(y_true, y_pred, average="macro")
 
-    # a = 0
-    # print(lens)
-    # for i in range(0, lens):
-    #     if y_true[i] == "neutral" and y_pred[i] == "positive":
-    #         a += 1
-    # print(a)
+    # print to console
+    print("precision: ", precision_total)
+    print("recall: ", recall_total, "\n")
 
+    print("accuracy: ", accuracy, "\n")
+    print("precisionPos: ", precision[0])
+    print("recallPos: ", recall[0], "\n")
+    print("precisionNeutral: ", precision[1])
+    print("recallNeutral: ", recall[1], "\n")
+    print("precisionNeg: ", precision[2])
+    print("recallNeg: ", recall[2], "\n")
+    print("f1: ", f1)
+    print("f1 without neutral: ", (fscore[0] + fscore[2]) / 2)
+
+    # print to file
+    with open("result.csv", 'w') as file:
+        file.write(str(precision_total) + ',')
+        file.write(str(recall_total) + ',')
+        file.write(str(accuracy) + ',')
+        file.write(str(precision[0]) + ',')
+        file.write(str(recall[0]) + ',')
+        file.write(str(precision[1]) + ',')
+        file.write(str(recall[1]) + ',')
+        file.write(str(precision[2]) + ',')
+        file.write(str(recall[2]) + ',')
+        file.write(str(f1) + ',')
+        file.write(str((fscore[0] + fscore[2]) / 2) + ',')
+        file.write('\n')
